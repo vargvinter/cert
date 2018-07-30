@@ -1,6 +1,6 @@
 # HTTP Verbs
 
-```
+```php
 Route::get($uri, $callback);
 Route::post($uri, $callback);
 Route::put($uri, $callback);
