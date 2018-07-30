@@ -9,7 +9,7 @@ Route::delete($uri, $callback);
 Route::options($uri, $callback);
 ```
 
-```
+```php
 Route::match(['get', 'post'], '/', function () {
     //
 });
@@ -21,13 +21,15 @@ Route::any('foo', function () {
 
 # Redirects
 
-`Route::redirect('/here', '/there', 301);`
+```php
+Route::redirect('/here', '/there', 301);
+```
 
 # Route Parameters
 
 ## Required Parameters
 
-```
+```php
 Route::get('user/{id}', function ($id) {
     return 'User '.$id;
 });
@@ -35,7 +37,7 @@ Route::get('user/{id}', function ($id) {
 
 ## Optional Parameters
 
-```
+```php
 Route::get('user/{name?}', function ($name = null) {
     return $name;
 });
@@ -47,7 +49,7 @@ Route::get('user/{name?}', function ($name = 'John') {
 
 ## Regular Expression Constraints
 
-```
+```php
 Route::get('user/{name}', function ($name) {
     //
 })->where('name', '[A-Za-z]+');
@@ -65,7 +67,7 @@ Route::get('user/{id}/{name}', function ($id, $name) {
 
 * Define patterns in the `boot` method of `RouteServiceProvider`
 
-```
+```php
 public function boot()
 {
     Route::pattern('id', '[0-9]+');
@@ -76,7 +78,7 @@ public function boot()
 
 * Then:
 
-```
+```php
 Route::get('user/{id}', function ($id) {
     // Only executed if {id} is numeric...
 });

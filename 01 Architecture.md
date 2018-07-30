@@ -23,7 +23,7 @@
 
 * Within a service provider, you always have access to the container via the `$this->app` property
 
-```
+```php
 $this->app->bind('HelpSpot\API', function ($app) {
     return new HelpSpot\API($app->make('HttpClient'));
 });
@@ -33,7 +33,7 @@ $this->app->bind('HelpSpot\API', function ($app) {
 
 * The `singleton` method binds a class or interface into the container that should only be resolved one time. Once a singleton binding is resolved, the same object instance will be returned on subsequent calls into the container.
 
-```
+```php
 $this->app->singleton('HelpSpot\API', function ($app) {
     return new HelpSpot\API($app->make('HttpClient'));
 });
@@ -42,7 +42,7 @@ $this->app->singleton('HelpSpot\API', function ($app) {
 ## Binding Instances
 
 * You may bind an existing object instance into the container using the `instance` method. The given instance will always be returned on subsequent calls into the container:
- ```
+ ```php
  $api = new HelpSpot\API(new HttpClient);
  
  $this->app->instance('HelpSpot\API', $api);
@@ -50,7 +50,7 @@ $this->app->singleton('HelpSpot\API', function ($app) {
  
 ## Binding Interfaces To Implementations
 
-```
+```php
 $this->app->bind(
     'App\Contracts\EventPusher',
     'App\Services\RedisEventPusher'
@@ -60,11 +60,11 @@ $this->app->bind(
 ## Resolving
 
 * The `make` Method
-```
+```php
 $api = $this->app->make('HelpSpot\API');
 ```
 
-```
+```php
 $api = resolve('HelpSpot\API');
 ```
 
@@ -81,7 +81,7 @@ $api = resolve('HelpSpot\API');
 * Within this method, only bind things into the service container.
 * Never register any event listeners, routes, etc. Otherwise, the service may be used before it was loaded by the service provider.
 
-```
+```php
 public function register()
 {
     $this->app->singleton(Connection::class, function ($app) {
@@ -93,7 +93,7 @@ public function register()
 ### The Boot Method
 
 * Is called after all other service providers have been registered.
-```
+```php
  public function boot()
  {
      view()->composer('view', function () {
@@ -103,7 +103,7 @@ public function register()
 ```
 
 * Dependencies (dependency injection) may by type-hinted.
-```
+```php
 public function boot(ResponseFactory $response)
 {
     $response->macro('caps', function ($value) {
@@ -115,7 +115,7 @@ public function boot(ResponseFactory $response)
 ## Registering Providers
 
 * `providers` array in `config/app.php` configuration file.
-```
+```php
 'providers' => [
     // Other Service Providers
 
@@ -129,7 +129,7 @@ public function boot(ResponseFactory $response)
 * Defer registration until one of the registered bindings is actually needed.
 * Improve the performance.
 * The `provides` method should return the service container bindings registered by the provider.
-```
+```php
 protected $defer = true;
 
 public function register()
@@ -155,13 +155,13 @@ public function provides()
 
 * One of the primary benefits of dependency injection is the ability to swap implementations of the injected class. This is useful during testing since you can inject a mock or stub and assert that various methods were called on the stub.
 * It would not be possible to mock or stub a truly static class method. However, since facades use dynamic methods to proxy method calls to objects resolved from the service container, facades can be tested as an injected class instance.  
-```
+```php
 Route::get('/cache', function () {
     return Cache::get('key');
 });
 ```
 
-```
+```php
 public function testBasicExample()
 {
     Cache::shouldReceive('get')
@@ -176,7 +176,7 @@ public function testBasicExample()
 ## Facades Vs. Helper Functions
 
 * Many of helper functions perform the same function as a corresponding facade.
-```
+```php
 return View::make('profile');
 
 return view('profile');
@@ -190,7 +190,7 @@ return view('profile');
 * The machinery that makes this work is in the `Facade` class.
 * Laravel's facades, and any custom facades, extend the base `Illuminate\Support\Facades\Facade` class.
 * The Facade base class makes use of the `__callStatic()` magic-method to defer calls from facade to an object resolved from the container.
-```
+```php
 class Cache extends Facade
 {
     protected static function getFacadeAccessor() { return 'cache'; }
@@ -202,7 +202,7 @@ class Cache extends Facade
 
 ## Real-Time Facades
 
-```
+```php
 <?php
 
 namespace App;
@@ -230,7 +230,7 @@ class Podcast extends Model
 * However, it requires us to always pass a `publisher` instance each time we call the publish method.
 * Using real-time facades can maintain the same testability while not being required to explicitly pass a `Publisher` instance. 
 * To generate a real-time facade, prefix the namespace of the imported class with `Facades`.
-```
+```php
 <?php
 
 namespace App;
@@ -256,7 +256,7 @@ class Podcast extends Model
 
 * And test:
 
-```
+```php
 <?php
 
 namespace Tests\Feature;
