@@ -19,6 +19,8 @@
 
 # Service Container Binding and Resolution
 
+There is no need to bind classes into the container if they do not depend on any interfaces. The container does not need to be instructed on how to build these objects, since it can automatically resolve these objects using **reflection**.
+
 ## Simple Bindings
 
 * Within a service provider, you always have access to the container via the `$this->app` property
@@ -48,6 +50,16 @@ $this->app->singleton('HelpSpot\API', function ($app) {
  $this->app->instance('HelpSpot\API', $api);
  ```
  
+## Binding Primitives
+
+Sometimes you may have a class that receives some injected classes, but also needs an injected primitive value such as an integer. You may easily use contextual binding to inject any value your class may need:
+
+```php
+$this->app->when('App\Http\Controllers\UserController')
+          ->needs('$variableName')
+          ->give($value);
+```
+ 
 ## Binding Interfaces To Implementations
 
 ```php
@@ -57,6 +69,57 @@ $this->app->bind(
 );
 ```
 
+## Contextual Binding
+
+Two controllers may depend on different implementations of the `Illuminate\Contracts\Filesystem\Filesystem` contract
+
+```php
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\VideoController;
+use Illuminate\Contracts\Filesystem\Filesystem;
+
+$this->app->when(PhotoController::class)
+          ->needs(Filesystem::class)
+          ->give(function () {
+              return Storage::disk('local');
+          });
+
+$this->app->when(VideoController::class)
+          ->needs(Filesystem::class)
+          ->give(function () {
+              return Storage::disk('s3');
+          });
+```
+
+## Tagging
+
+```php
+$this->app->bind('SpeedReport', function () {
+    //
+});
+
+$this->app->bind('MemoryReport', function () {
+    //
+});
+
+$this->app->tag(['SpeedReport', 'MemoryReport'], 'reports');
+
+$this->app->bind('ReportAggregator', function ($app) {
+    return new ReportAggregator($app->tagged('reports'));
+});
+```
+
+## Extending Bindings
+
+The `extend` method allows the modification of resolved services. For example, when a service is resolved, run additional code to decorate or configure the service. The `extend` method accepts a Closure, which should return the modified service, as its only argument:
+
+```php
+$this->app->extend(Service::class, function($service) {
+    return new DecoratedService($service);
+});
+```
+
 ## Resolving
 
 * The `make` Method
@@ -64,11 +127,47 @@ $this->app->bind(
 $api = $this->app->make('HelpSpot\API');
 ```
 
+Without access to the `$app` variable use:
+
 ```php
 $api = resolve('HelpSpot\API');
 ```
 
+If some of class' dependencies are not resolvable via the container, inject them by passing them as an associative array into the `makeWith` method:
+
+```php
+$api = $this->app->makeWith('HelpSpot\API', ['id' => 1]);
+```
+
 * **Automatic Injection** - you may "type-hint" the dependency in the constructor of a class that is resolved by the container, including controllers, event listeners, queue jobs, middleware, and more.
+
+# Container Events
+
+```php
+$this->app->resolving(function ($object, $app) {
+    // Called when container resolves object of any type...
+});
+
+$this->app->resolving(HelpSpot\API::class, function ($api, $app) {
+    // Called when container resolves objects of type "HelpSpot\API"...
+});
+```
+
+# PSR-11
+
+Laravel's service container implements the PSR-11 interface. Therefore, you may type-hint the PSR-11 container interface to obtain an instance of the Laravel container:
+
+```php
+use Psr\Container\ContainerInterface;
+
+Route::get('/', function (ContainerInterface $container) {
+    $service = $container->get('Service');
+
+    //
+});
+```
+
+**Calling the `get` method will throw an exception if the identifier has not been explicitly bound into the container.**
 
 # Service Providers
 
@@ -125,7 +224,7 @@ public function boot(ResponseFactory $response)
 
 ## Deferred Providers
 
-* Use if provider is only registering bindings in the service container.
+* Use if provider is **only** registering bindings in the service container.
 * Defer registration until one of the registered bindings is actually needed.
 * Improve the performance.
 * The `provides` method should return the service container bindings registered by the provider.
@@ -183,6 +282,24 @@ return view('profile');
 ```
 * There is no practical difference between facades and helper functions.
 * When using helper functions, they may be tested exactly as the corresponding facade.
+
+```php
+Route::get('/cache', function () {
+    return cache('key');
+});
+```
+
+```php
+public function testBasicExample()
+{
+    Cache::shouldReceive('get')
+         ->with('key')
+         ->andReturn('value');
+
+    $this->visit('/cache')
+         ->see('value');
+}
+```
 
 ## How Facades Work
 
