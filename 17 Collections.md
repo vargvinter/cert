@@ -29,7 +29,7 @@ Typically, you should declare collection macros in a service provider.
 # Higher Order Messages
 
 * They are short-cuts for performing common actions on collections.
-* The collection methods that provide higher order messages are: average, avg, contains, each, every, filter, first, flatMap, map,  partition, reject, sortBy, sortByDesc, sum, and unique.
+* The collection methods that provide higher order messages are: `average`, `avg`, `contains`, `each`, `every`, `filter`, `first`, `flatMap`, `map`,  `partition`, `reject`, `sortBy`, `sortByDesc`, `sum`, and `unique`.
 * Each higher order message can be accessed as a dynamic property on a collection instance.
 
 ```php

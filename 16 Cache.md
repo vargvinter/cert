@@ -10,27 +10,58 @@ The cache configuration is located at `config/cache.php`.
 * Apc
 * Array
 
-# Storing Items In The Cache
+## Driver Prerequisites
+
+### Database
 
 ```php
-Cache::put('key', 'value', $minutes);
+Schema::create('cache', function ($table) {
+    $table->string('key')->unique();
+    $table->text('value');
+    $table->integer('expiration');
+});
 ```
 
-## Store If Not Present
+OR
+
+`php artisan cache:table` to generate migration with proper schema.
+
+### Memcached
+
+* `Memcached PECL` package must be installed
+* `config/cache.php`:
+ ```php
+'memcached' => [
+    [
+        'host' => '127.0.0.1',
+        'port' => 11211,
+        'weight' => 100
+    ],
+],
+```
+
+### Redis
+
+* `predis/predis` package
+
+# Cache Usage
+
+## Obtaining A Cache Instance
+
+* `Illuminate\Contracts\Cache\Factory` and `Illuminate\Contracts\Cache\Repository` contracts provide access to Laravel's cache services.
+* The `Factory` contract provides access to all cache drivers defined for your application. 
+* The `Repository` contract is typically an implementation of the default cache driver.
+* Typically use `Cache` facade.
+
+### Accessing Multiple Cache Stores
 
 ```php
-Cache::add('key', 'value', $minutes);
+$value = Cache::store('file')->get('foo');
+
+Cache::store('redis')->put('bar', 'baz', 10);
 ```
 
-The method will return `true` if the item is actually added to the cache. Otherwise, the method will return `false`.
-
-## Storing Items Forever
-
-```php
-Cache::forever('key', 'value');
-```
-
-# Retrieving Items From The Cache
+## Retrieving Items From The Cache
 
 ```php
 $value = Cache::get('key');
@@ -46,7 +77,7 @@ $value = Cache::get('key', function () {
 });
 ```
 
-## Checking For Item Existence
+### Checking For Item Existence
 
 ```php
 if (Cache::has('key')) {
@@ -54,7 +85,7 @@ if (Cache::has('key')) {
 }
 ```
 
-## Incrementing / Decrementing Values
+### Incrementing / Decrementing Values
 
 The `increment` and `decrement` methods may be used to adjust the value of integer items in the cache.
 
@@ -65,7 +96,7 @@ Cache::decrement('key');
 Cache::decrement('key', $amount);
 ```
 
-## Retrieve & Store
+### Retrieve & Store
 
 If data don't exist, retrieve it from the database and add it to the cache.
 
@@ -81,17 +112,51 @@ $value = Cache::rememberForever('users', function() {
 });
 ```
 
-## Retrieve & Delete
+### Retrieve & Delete
 
 ```php
 $value = Cache::pull('key');
 ```
 
+## Storing Items In The Cache
+
+```php
+Cache::put('key', 'value', $minutes);
+```
+
+### Store If Not Present
+
+```php
+Cache::add('key', 'value', $minutes);
+```
+
+The method will return `true` if the item is actually added to the cache. Otherwise, the method will return `false`.
+
+### Storing Items Forever
+
+```php
+Cache::forever('key', 'value');
+```
+
+## Removing Items From The Cache
+
+Single value:
+```php
+Cache::forget('key');
+```
+
+All the cache:
+```php
+Cache::flush();
+```
+
+**Flushing the cache does not respect the cache prefix and will remove all entries from the cache. Consider this carefully when clearing a cache which is shared by other applications.**
+
 # Cache Tags
 
-Cache tags are not supported when using the file or database cache drivers. 
+Cache tags are not supported when using the `file` or `database` cache drivers. 
 
-Cache tags allow you to tag related items in the cache and then flush all cached values that have been assigned a given tag.
+Cache tags allow to tag related items in the cache and then flush all cached values that have been assigned a given tag.
 
 ## Storing Tagged Cache Items
 
@@ -147,11 +212,10 @@ class MongoStore implements Store
 
 Once our implementation is complete, we can finish our custom driver registration.
 
-To register the custom cache driver with Laravel, we will use the extend method on the Cache facade. The call to Cache::extend could be done in the boot method of the default  App\Providers\AppServiceProvider.
+To register the custom cache driver with Laravel, we will use the extend method on the `Cache` facade. The call to `Cache::extend` could be done in the `boot` method of the default  `App\Providers\AppServiceProvider`.
 
 ```php
 Cache::extend('mongo', function ($app) {
     return Cache::repository(new MongoStore);
 });
 ```
-

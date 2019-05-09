@@ -29,7 +29,7 @@ php artisan migrate
 
 ### Redis
 
-In order to use the redis queue driver, you should configure a Redis database connection in your config/database.php configuration file.
+In order to use the redis queue driver, you should configure a Redis database connection in `config/database.php` configuration file.
 
 ### Other Driver Prerequisites
 
@@ -41,11 +41,11 @@ Redis: predis/predis ~1.0
 
 ## Generating Job Classes
 
-All of the queueable jobs are stored in the app/Jobs directory.
+All of the queueable jobs are stored in the `app/Jobs` directory.
 
 `php artisan make:job ProcessPodcast`
 
-The generated class will implement the Illuminate\Contracts\Queue\ShouldQueue interface, indicating to Laravel that the job should be pushed onto the queue to run asynchronously.
+The generated class will implement the `Illuminate\Contracts\Queue\ShouldQueue` interface, indicating to Laravel that the job should be pushed onto the queue to run asynchronously.
 
 ## Class Structure
 
@@ -269,7 +269,7 @@ class ProcessPodcast implements ShouldQueue
 
 **This feature requires that your application can interact with a Redis server.**
 
-This feature can be of assistance when your queued jobs are interacting with APIs that are also rate limited. For example, using the throttle method, you may throttle a given type of job to only run 10 times every 60 seconds. If a lock can not be obtained, you should typically release the job back onto the queue so it can be retried later:
+This feature can be of assistance when your queued jobs are interacting with APIs that are also rate limited. For example, using the `throttle` method, you may throttle a given type of job to only run 10 times every 60 seconds. If a lock can not be obtained, you should typically release the job back onto the queue so it can be retried later:
 
 ```php
 Redis::throttle('key')->allow(10)->every(60)->then(function () {
@@ -313,7 +313,7 @@ If an exception is thrown while the job is being processed, the job will automat
 
 ## Resource considerations
 
-**Daemon queue workers do not "reboot" the framework before processing each job. Therefore, you should free any heavy resources after each job completes. For example, if you are doing image manipulation with the GD library, you should free the memory with imagedestroy when you are done.**
+**Daemon queue workers do not "reboot" the framework before processing each job. Therefore, you should free any heavy resources after each job completes. For example, if you are doing image manipulation with the `GD` library, you should free the memory with `imagedestroy` when you are done.**
 
 ## Queue Priorities
 
@@ -355,7 +355,7 @@ To start a worker that verifies that all of the high queue jobs are processed be
 
 ## Configuring Supervisor
 
-* config file is stored in /etc/supervisor/conf.d directory.
+* config file is stored in `/etc/supervisor/conf.d` directory.
 * `laravel-worker.conf` sample:
 
 ```

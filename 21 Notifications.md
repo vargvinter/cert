@@ -2,7 +2,7 @@
 
 `php artisan make:notification InvoicePaid`
 
-* This command will place a fresh notification class in your `app/Notifications` directory.
+* This command will place a fresh notification class in `app/Notifications` directory.
 
 # Sending Notifications
 
@@ -52,7 +52,7 @@ public function via($notifiable)
 
 ## Queueing Notifications
 
- speed up your application's response time, let your notification be queued by adding the ShouldQueue interface and Queueable trait to your class.
+Add the `ShouldQueue` interface and `Queueable` trait to class.
  
 ```php
 <?php
@@ -71,7 +71,7 @@ class InvoicePaid extends Notification implements ShouldQueue
 }
 ```
 
-If you would like to delay the delivery of the notification, you may chain the delay method onto your notification instantiation:
+To delay delivery chain the `delay` method onto notification instantiation:
 
 ```php
 $when = now()->addMinutes(10);
@@ -94,7 +94,7 @@ Notification::route('mail', 'taylor@laravel.com')
 ## Formatting Mail Messages
 
 * Define a `toMail` method on the notification class.
-* This method will receive a $notifiable entity and should return a  `Illuminate\Notifications\Messages\MailMessage` instance. 
+* This method will receive a `$notifiable` entity and should return a  `Illuminate\Notifications\Messages\MailMessage` instance. 
 
 ```php
 public function toMail($notifiable)
@@ -109,7 +109,7 @@ public function toMail($notifiable)
 }
 ```
 
-In this example, we register a greeting, a line of text, a call to action, and then another line of text. These methods provided by the MailMessage object make it simple and fast to format small transactional emails. The mail channel will then translate the message components into a nice, responsive HTML email template with a plain-text counterpart. 
+In this example, we register a greeting, a line of text, a call to action, and then another line of text. These methods provided by the `MailMessage` object make it simple and fast to format small transactional emails. The mail channel will then translate the message components into a nice, responsive HTML email template with a plain-text counterpart. 
 
 ### Other Notification Formatting Options
 
@@ -122,7 +122,7 @@ public function toMail($notifiable)
 }
 ```
 
-In addition, you may return a mailable object from the toMail method:
+In addition, you may return a `Mailable` object from the `toMail` method:
 
 ```php
 public function toMail($notifiable)
@@ -133,7 +133,7 @@ public function toMail($notifiable)
 
 ### Error Messages
 
-You may indicate that a mail message is regarding an error by calling the error method when building your message.
+Indicate that a mail message is regarding an error by calling the `error` method when building message.
 
 ```php
 public function toMail($notifiable)
@@ -147,7 +147,8 @@ public function toMail($notifiable)
 
 ## Customizing The Recipient
 
-You may customize which email address is used to deliver the notification by defining a routeNotificationForMail method on the entity:
+* When sending notifications via the `mail` channel, the notification system will automatically look for an `email` property on notifiable entity.
+* To customize which email address is used to deliver the notification define a `routeNotificationForMail` method on the entity:
 
 ```php
 class User extends Authenticatable
@@ -179,7 +180,7 @@ public function toMail($notifiable)
 
 ## Customizing The Templates
 
-After running this command, the mail notification templates will be located in the resources/views/vendor/notifications directory
+After running this command, the mail notification templates will be located in the `resources/views/vendor/notifications` directory
 
 `php artisan vendor:publish --tag=laravel-notifications`
 
@@ -189,7 +190,8 @@ After running this command, the mail notification templates will be located in t
 
 `php artisan make:notification InvoicePaid --markdown=mail.invoice.paid`
 
-Like all other mail notifications, notifications that use Markdown templates should define a  toMail method on their notification class. However, instead of using the line and action methods to construct the notification, use the markdown method to specify the name of the Markdown template that should be used:
+* Like all other mail notifications define a `toMail` method on notification class. 
+* Instead of using the `line` and `action` methods to construct the notification, use the `markdown` method to specify the name of the Markdown template that should be used:
 
 ```php
 public function toMail($notifiable)
@@ -204,7 +206,7 @@ public function toMail($notifiable)
 
 ## Writing The Message
 
-Like in 20 Mail.md
+Like markdown mail in 20 Mail.md.
 
 # Database Notifications
 
@@ -221,7 +223,7 @@ php artisan migrate
 
 ## Formatting Database Notifications
 
-define a toDatabase or  toArray method on the notification class.
+* define a `toDatabase` or `toArray` method on the notification class.
 
 ```php
 public function toArray($notifiable)
@@ -235,13 +237,13 @@ public function toArray($notifiable)
 
 `toDatabase` Vs. `toArray`
 
-The toArray method is also used by the broadcast channel to determine which data to broadcast to your JavaScript client. If you would like to have two different array representations for the database and broadcast channels, you should define a toDatabase method instead of a toArray method.
+The `toArray` method is also used by the `broadcast` channel to determine which data to broadcast to JavaScript client. To have two different array representations for the `database` and `broadcast` channels, define a `toDatabase` method instead of a `toArray` method.
 
 ## Accessing The Notifications
 
-The Illuminate\Notifications\Notifiable trait, includes a notifications Eloquent relationship that returns the notifications for the entity.
+The `Illuminate\Notifications\Notifiable` trait, includes a notifications Eloquent relationship that returns the notifications for the entity.
 
-* By default, notifications will be sorted by the created_at timestamp:
+* By default, notifications will be sorted by the `created_at` timestamp:
 
 ```php
 $user = App\User::find(1);
@@ -251,7 +253,7 @@ foreach ($user->notifications as $notification) {
 }
 ```
 
-If you want to retrieve only the "unread" notifications, you may use the unreadNotifications relationship.
+To retrieve only the "unread" notifications, use the `unreadNotifications` relationship.
 
 ```php
 $user = App\User::find(1);
@@ -263,7 +265,7 @@ foreach ($user->unreadNotifications as $notification) {
 
 ## Marking Notifications As Read
 
-The  Illuminate\Notifications\Notifiable trait provides a markAsRead method, which updates the  read_at column on the notification's database record:
+The  `Illuminate\Notifications\Notifiable` trait provides a `markAsRead` method, which updates the  `read_at` column on the notification's database record:
 
 ```php
 $user = App\User::find(1);
@@ -325,7 +327,7 @@ return (new BroadcastMessage($data))
 
 ## Listening For Notifications
 
-Notifications will broadcast on a private channel formatted using a {notifiable}.{id} convention. So, if you are sending a notification to a App\User instance with an ID of 1, the notification will be broadcast on the App.User.1 private channel. When using Laravel Echo, you may easily listen for notifications on a channel using the notification helper method:
+Notifications will broadcast on a `private` channel formatted using a `{notifiable}.{id}` convention. So, if you are sending a notification to a `App\User` instance with an `ID` of 1, the notification will be broadcast on the `App.User.1` private channel. When using `Laravel Echo`, you may easily listen for notifications on a channel using the notification helper method:
 
 ```js
 Echo.private('App.User.' + userId)
@@ -335,6 +337,8 @@ Echo.private('App.User.' + userId)
 ```
 
 ### Customizing The Notification Channel
+
+To customize which channels a notifiable entity receives its broadcast notifications on, define a `receivesBroadcastNotificationsOn` method on the notifiable entity:
 
 ```php
 <?php
@@ -366,7 +370,7 @@ class User extends Authenticatable
 ## Prerequisites
 
 * install the `nexmo/client` Composer package.
-* add a few configuration options to your `config/services.php` configuration file.
+* add a few configuration options to `config/services.php` configuration file.
 
 ```php
 'nexmo' => [
@@ -394,7 +398,7 @@ public function toNexmo($notifiable)
 
 ### Unicode Content
 
-If your SMS message will contain unicode characters, you should call the unicode method when constructing the NexmoMessage instance:
+If SMS message will contain unicode characters, call the `unicode` method when constructing the `NexmoMessage` instance:
 
 ```php
 public function toNexmo($notifiable)
@@ -418,7 +422,7 @@ public function toNexmo($notifiable)
 
 ## Routing SMS Notifications
 
-When sending notifications via the nexmo channel, the notification system will automatically look for a phone_number attribute on the notifiable entity.
+When sending notifications via the `nexmo` channel, the notification system will automatically look for a `phone_number` attribute on the notifiable entity.
 Customize it:
 
 ```php
@@ -469,7 +473,7 @@ public function toSlack($notifiable)
 
 ### Customizing The Sender & Recipient
 
-You may use the from and to methods to customize the sender and recipient. The from method accepts a username and emoji identifier, while the to method accepts a channel or username:
+You may use the `from` and `to` methods to customize the sender and recipient. The `from` method accepts a username and emoji identifier, while the `to` method accepts a channel or username:
 
 ```php
 public function toSlack($notifiable)
@@ -481,7 +485,7 @@ public function toSlack($notifiable)
 }
 ```
 
-You may also use an image as your logo instead of an emoji:
+You may also use an `image` as your logo instead of an emoji:
 
 ```php
 public function toSlack($notifiable)
@@ -603,7 +607,7 @@ class VoiceChannel
 }
 ```
 
-* Once your notification channel class has been defined, you may return the class name from the  via method of any of your notifications
+* Once your notification channel class has been defined, you may return the class name from the  `via` method of any of your notifications
 
 ```php
 <?php

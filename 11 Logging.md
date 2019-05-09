@@ -1,3 +1,8 @@
+# Introduction
+
+The `App\Exceptions\Handler` class is where all exceptions triggered by application are logged and then rendered back to the user.
+For logging, Laravel utilizes the `Monolog` library.
+
 # Configuration
 
 ## Error Detail
@@ -8,6 +13,9 @@
 ## Log Storage
 
 * Out of the box, Laravel supports writing log information to `single` files, `daily` files, the `syslog`, and the `errorlog`.
+* `config/app.php` configuration file.
+
+`'log' => 'daily'`
 
 ## Maximum Daily Log Files
 
@@ -20,7 +28,7 @@
 
 `'log_level' => env('APP_LOG_LEVEL', 'error'),`
 
-*Monolog recognizes the following severity levels - from least severe to most severe:  debug, info, notice, warning, error, critical, alert, emergency.*
+*Monolog recognizes the following severity levels - from least severe to most severe:  `debug`, `info`, `notice`, `warning`, `error`, `critical`, `alert`, `emergency`.*
 
 ## Custom Monolog Configuration
 
@@ -89,7 +97,7 @@ public function isValid($value)
 ### Ignoring Exceptions By Type
 
 * The `$dontReport` property of the exception handler contains an array of exception types that will not be logged.
-* For example, exceptions resulting from 404 errors, as well as several other types of errors, are not written to log files.
+* For example, exceptions resulting from `404` errors, as well as several other types of errors, are not written to log files.
 
 ```php
 /**

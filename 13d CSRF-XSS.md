@@ -5,6 +5,8 @@
 CSRF - cross-site request forgery.
 Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of an authenticated user.
 
+Any HTML forms pointing to `POST`, `PUT`, or `DELETE` routes that are defined in the web routes file should include a CSRF token field.
+
 * Laravel automatically generates a CSRF "token" for each active user session managed by the application.
 * This token is used to verify that the authenticated user is the one actually making the requests to the application.
 

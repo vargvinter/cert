@@ -250,7 +250,7 @@ $messages = [
 
 * Specifying Custom Messages In Language Files
 
-    * Add messages to `custom` array in the `resources/lang/xx/validation.ph`p language file:
+    * Add messages to `custom` array in the `resources/lang/xx/validation.php` language file:
     
 ```php
 'custom' => [
@@ -266,6 +266,73 @@ $messages = [
 ```php
 'attributes' => [
     'email' => 'email address',
+],
+```
+
+# Conditionally Adding Rules
+
+* Validating When Present
+
+    * Run validation checks against a field only if that field is present in the input.
+    * Add the `sometimes` rule
+
+```php
+$v = Validator::make($data, [
+    'email' => 'sometimes|required|email',
+]);
+```
+
+* Complex Conditional Validation
+
+```php
+$v = Validator::make($data, [
+    'email' => 'required|email',
+    'games' => 'required|numeric',
+]);
+
+$v->sometimes('reason', 'required|max:500', function ($input) {
+    return $input->games >= 100;
+});
+```
+
+The first argument passed to the `sometimes` method is the name of the field we are conditionally validating. The second argument is the rules we want to add. If the `Closure` passed as the third argument returns `true`, the rules will be added.
+
+* For several fields:
+
+```php
+$v->sometimes(['reason', 'cost'], 'required', function ($input) {
+    return $input->games >= 100;
+});
+```
+
+**The `$input` parameter passed to `Closure` will be an instance of  `Illuminate\Support\Fluent` and may be used to access input and files.**
+
+# Validating Arrays
+
+For example, if the incoming HTTP request contains a  `photos[profile]` field, validate it like so:
+
+```php
+$validator = Validator::make($request->all(), [
+    'photos.profile' => 'required|image',
+]);
+```
+
+Validate each element of an array:
+
+```php
+$validator = Validator::make($request->all(), [
+    'person.*.email' => 'email|unique:users',
+    'person.*.first_name' => 'required_with:person.*.last_name',
+]);
+```
+
+Use the `*` character when specifying validation messages in language files.
+
+```
+'custom' => [
+    'person.*.email' => [
+        'unique' => 'Each person must have a unique e-mail address',
+    ]
 ],
 ```
 
@@ -348,16 +415,6 @@ class AppServiceProvider extends ServiceProvider
         //OR 
         
         Validator::extend('foo', 'FooValidator@validate');
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }
 ```

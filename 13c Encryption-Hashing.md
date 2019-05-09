@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Laravel's encrypter uses OpenSSL to provide AES-256 and AES-128 encryption. All of Laravel's encrypted values are signed using a message authentication code (MAC) so that their underlying value can not be modified once encrypted.
+Laravel's encrypter uses `OpenSSL` to provide `AES-256` and `AES-128` encryption. All of Laravel's encrypted values are signed using a message authentication code (MAC) so that their underlying value can not be modified once encrypted.
                                                                             
 ## Configuration
 
@@ -28,6 +28,8 @@ public function storeSecret(Request $request, $id)
 ```
 
 ### Encrypting Without Serialization
+
+Non-PHP clients receiving encrypted values will need to unserialize the data.
 
 ```php
 use Illuminate\Support\Facades\Crypt;
@@ -70,7 +72,7 @@ public function update(Request $request)
 }
 ```
 
-The `make` method also allows you to manage the work factor of the bcrypt hashing algorithm using the `rounds` option; however, the default is acceptable for most applications.
+The `make` method also allows you to manage the work factor of the `bcrypt` hashing algorithm using the `rounds` option; however, the default is acceptable for most applications.
 
 ```php
 $hashed = Hash::make('password', [

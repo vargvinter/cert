@@ -150,6 +150,8 @@ DELETE|/photos/{photo}|destroy|photos.destroy|
 
 ## Partial Resource Routes
 
+* specify a subset of actions the controller should handle instead of the full set of default actions.
+
 ```php
 Route::resource('photo', 'PhotoController', ['only' => [
     'index', 'show'
@@ -336,3 +338,10 @@ class UserController extends Controller
 
 `php artisan route:cache`
 
+* Use the `route:clear` command to clear the route cache:
+
+`php artisan route:clear`
+
+* Location of the cached routes:
+
+`bootstrap/cache/routes.php`

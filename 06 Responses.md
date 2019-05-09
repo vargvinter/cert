@@ -1,3 +1,26 @@
+# Creating Responses
+
+```php
+Route::get('/', function () {
+    return 'Hello World';
+});
+```
+
+```php
+Route::get('/', function () {
+    return [1, 2, 3];
+});
+```
+
+* A `Illuminate\Http\Response` instance inherits from the  `Symfony\Component\HttpFoundation\Response` class, which provides a variety of methods for building HTTP responses.
+
+```php
+Route::get('home', function () {
+    return response('Hello World', 200)
+                  ->header('Content-Type', 'text/plain');
+});
+```
+
 # Attaching Headers / Cookies
 
 ## Attaching headers
@@ -44,11 +67,17 @@ protected $except = [
 
 # Redirects
 
+Redirect responses are instances of the `Illuminate\Http\RedirectResponse` class, and contain the proper headers needed to redirect the user to another URL.
+
 ```php
 Route::get('dashboard', function () {
     return redirect('home/dashboard');
 });
 ```
+
+* Redirect the user to their previous location.
+* This feature utilizes the `session`
+* Route calling the `back` function must be using the `web` middleware group.
 
 ```php
 Route::post('user/profile', function () {
@@ -59,6 +88,8 @@ Route::post('user/profile', function () {
 ```
 
 ## Redirecting To Named Routes
+
+When the `redirect` helper is called with no parameters, an instance of  `Illuminate\Routing\Redirector` is returned, allowing to call any method on the `Redirector` instance.
 
 ```php
 return redirect()->route('login');

@@ -29,6 +29,16 @@ return Route::redirect('/somewhere', 301);
 return redirect('/somewhere', 301);
 ```
 
+# View Routes
+
+If your route only needs to return a view, you may use the `Route::view` method.
+
+```php
+Route::view('/welcome', 'welcome');
+
+Route::view('/welcome', 'welcome', ['name' => 'Taylor']);
+```
+
 # Route Parameters
 
 ## Required Parameters
@@ -38,6 +48,8 @@ Route::get('user/{id}', function ($id) {
     return 'User '.$id;
 });
 ```
+
+Route parameters are always encased within `{}` braces and should consist of alphabetic characters, and may not contain a `-` character. Instead of using the `-` character, use an underscore (`_`).
 
 ## Optional Parameters
 

@@ -1,3 +1,31 @@
+# Accessing The Request
+
+Via dependency injection, type-hint the `Illuminate\Http\Request`.
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    /**
+     * Store a new user.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $name = $request->input('name');
+
+        //
+    }
+}
+```
+
 # PSR-7 Requests
 
 * Install:
@@ -40,6 +68,11 @@ if ($request->isMethod('post')) {
 }
 ```
 
+# Input Trimming & Normalization
+
+* Laravel includes the `TrimStrings` and `ConvertEmptyStringsToNull` middleware in application's global middleware stack.
+* These middleware will automatically trim all incoming string fields on the request, as well as convert any empty string fields to `null`.
+
 # Retrieving Input
 
 ## Retrieving All Input Data
@@ -62,7 +95,7 @@ $names = $request->input('products.*.name');
 
 * `$name = $request->query('name');`
 
-* Retrieve default: 
+* Retrieve with default value: 
 `$name = $request->query('name', 'Helen');`
 
 * Retrieve all:
@@ -120,9 +153,12 @@ if ($request->filled('name')) {
 
 ### Flashing Input To The Session
 
+The `flash` method on the `Illuminate\Http\Request` class will flash the current input to the session so that it is available during the user's next request to the application.
+
 ```php
 $request->flash();
 
+//flash a subset of the request data to the session
 $request->flashOnly(['username', 'email']);
 
 $request->flashExcept('password');
@@ -174,6 +210,8 @@ return response('Hello World')->cookie($cookie);
 
 ## Retrieving Uploaded Files
 
+The `file` method returns an instance of the  `Illuminate\Http\UploadedFile` class, which extends the PHP `SplFileInfo` class and provides a variety of methods for interacting with the file.
+
 ```php
 $file = $request->file('photo');
 
@@ -210,8 +248,10 @@ $extension = $request->photo->extension()
 * Filename will be random:
 
 ```php
+// store in images folder in default disk
 $path = $request->photo->store('images');
 
+// store in images in s3 disk
 $path = $request->photo->store('images', 's3');
 ```
 

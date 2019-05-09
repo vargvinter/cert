@@ -48,8 +48,10 @@ class Kernel extends ConsoleKernel
 ## Scheduling Artisan Commands
 
 ```php
+// artisan command name
 $schedule->command('emails:send --force')->daily();
 
+// artisan command class
 $schedule->command(EmailsCommand::class, ['--force'])->daily();
 ```
 
@@ -111,7 +113,7 @@ $schedule->command('foo')
 
 ### Between Time Constraints
 
-The between method may be used to limit the execution of a task based on the time of day:
+The `between` method may be used to limit the execution of a task based on the time of day:
 
 ```php
 $schedule->command('reminders:send')
@@ -119,7 +121,7 @@ $schedule->command('reminders:send')
                     ->between('7:00', '22:00');
 ```
 
-Similarly, the unlessBetween method can be used to exclude the execution of a task for a period of time:
+Similarly, the `unlessBetween` method can be used to exclude the execution of a task for a period of time:
 
 ```php
 $schedule->command('reminders:send')
@@ -129,7 +131,7 @@ $schedule->command('reminders:send')
 
 ### Truth Test Constraints
 
-if the given Closure returns true, the task will execute as long as no other constraining conditions prevent the task from running
+if the given Closure returns `true`, the task will execute as long as no other constraining conditions prevent the task from running
 
 ```php
 $schedule->command('emails:send')->daily()->when(function () {
@@ -137,7 +139,7 @@ $schedule->command('emails:send')->daily()->when(function () {
 });
 ```
 
-The skip method may be seen as the inverse of when. If the skip method returns true, the scheduled task will not be executed:
+The `skip` method may be seen as the inverse of `when`. If the `skip` method returns `true`, the scheduled task will not be executed:
 
 ```php
 $schedule->command('emails:send')->daily()->skip(function () {
@@ -145,7 +147,7 @@ $schedule->command('emails:send')->daily()->skip(function () {
 });
 ```
 
-When using chained when methods, the scheduled command will only execute if all when conditions return true.
+When using chained `when` methods, the scheduled command will only execute if all when conditions return true.
 
 # Preventing Task Overlaps
 
@@ -195,11 +197,11 @@ $schedule->command('foo')
          ->emailOutputTo('foo@example.com');
 ```
 
-**The emailOutputTo, sendOutputTo and appendOutputTo methods are exclusive to the  command method and are not supported for call.**
+**The `emailOutputTo`, `sendOutputTo` and `appendOutputTo` methods are exclusive to the  `command` method and are not supported for `call`.**
 
 # Task Hooks
 
-Using the before and after methods, you may specify code to be executed before and after the scheduled task is complete:
+Using the `before` and `after` methods, you may specify code to be executed before and after the scheduled task is complete:
 
 ```php
 $schedule->command('emails:send')
@@ -214,7 +216,7 @@ $schedule->command('emails:send')
 
 ## Pinging URLs
 
-Using the pingBefore and thenPing methods, the scheduler can automatically ping a given URL before or after a task is complete. This method is useful for notifying an external service, such as Laravel Envoyer, that your scheduled task is commencing or has finished execution:
+Using the `pingBefore` and `thenPing` methods, the scheduler can automatically ping a given URL before or after a task is complete. This method is useful for notifying an external service, such as Laravel Envoyer, that your scheduled task is commencing or has finished execution:
 
 ```php
 $schedule->command('emails:send')
@@ -223,6 +225,6 @@ $schedule->command('emails:send')
          ->thenPing($url);
 ```
 
-Using either the pingBefore($url) or thenPing($url) feature requires the Guzzle HTTP library. You can add Guzzle to your project using the Composer package manager:
+Using either the `pingBefore($url)` or `thenPing($url)` feature requires the Guzzle HTTP library. You can add Guzzle to your project using the Composer package manager:
 
 `composer require guzzlehttp/guzzle`

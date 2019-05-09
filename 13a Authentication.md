@@ -7,6 +7,14 @@ if (Auth::attempt(['email' => $email, 'password' => $password])) {
 }
 ```
 
+## Additional conditions
+
+```php
+if (Auth::attempt(['email' => $email, 'password' => $password, 'active' => 1])) {
+    // The user is active, not suspended, and exists.
+}
+```
+
 ## Accessing Specific Guard Instances
 
 ```php
@@ -35,6 +43,8 @@ if (Auth::viaRemember()) {
 
 ### Authenticate A User Instance
 
+The given object must be an implementation of the  `Illuminate\Contracts\Auth\Authenticatable` contract.
+
 ```php
 Auth::login($user);
 
@@ -54,6 +64,8 @@ Auth::loginUsingId(1, true);
 ```
 
 ### Authenticate A User Once
+
+Helpful when building a stateless API.
 
 ```php
 if (Auth::once($credentials)) {

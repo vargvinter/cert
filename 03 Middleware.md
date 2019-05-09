@@ -155,6 +155,8 @@ Route::group(['middleware' => ['web']], function () {
 });
 ```
 
+Out of the box, the `web` middleware group is automatically applied to  `routes/web.php` file by the `RouteServiceProvider`.
+
 # Middleware Parameters
 
 * Additional middleware parameters will be passed to the middleware after the `$next` argument.
@@ -180,9 +182,10 @@ Route::put('post/{id}', function ($id) {
 
 # Terminable middlewares
 
-* So some work after the HTTP response has been sent to the browser.
+* Do some work after the HTTP response has been sent to the browser.
 * For example, the "session" middleware writes the session data to storage after the response has been sent to the browser.
 * Define `terminate` method in middleware class.
+* `terminate` method on middleware will automatically be called after the response is sent to the browser
 
 ```php
 <?php

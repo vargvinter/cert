@@ -42,11 +42,14 @@
 
 # Service Providers
 
+* A service provider extends the `Illuminate\Support\ServiceProvider` class and contains two methods: `register` and `boot`.
+* The base `ServiceProvider` class is located in the  `illuminate/support` Composer package and should be added to package dependencies.
+
 # Resources
 
 ## Configuration
 
-Allow users to override your package's config.
+Allow users to override package's config.
 
 ```php
 public function boot()
@@ -56,6 +59,8 @@ public function boot()
     ]);
 }
 ```
+
+**You should not define Closures in your configuration files. They can not be serialized correctly when users execute the config:cache Artisan command.**
 
 ### Default Package Configuration
 
@@ -68,9 +73,11 @@ public function register()
 }
 ```
 
+**This method only merges the first level of the configuration array. If your users partially define a multi-dimensional configuration array, the missing options will not be merged.**
+
 ## Routes
 
-If your package contains routes, you may load them using the loadRoutesFrom method.
+If your package contains routes, you may load them using the `loadRoutesFrom` method.
 
 ```php
 public function boot()
@@ -88,7 +95,7 @@ public function boot()
 }
 ```
 
-Once your package's migrations have been registered, they will automatically be run when the  php artisan migrate command is executed.
+Once your package's migrations have been registered, they will automatically be run when the  `php artisan migrate` command is executed.
 
 ## Translations
 
@@ -99,7 +106,7 @@ public function boot()
 }
 ```
 
-Package translations are referenced using the package::file.line syntax convention. So, you may load the courier package's welcome line from the messages file like so:
+Package translations are referenced using the `package::file.line` syntax convention. So, you may load the `courier` package's `welcome` line from the `messages` file like so:
 
 `echo trans('courier::messages.welcome');`
 
@@ -125,7 +132,7 @@ public function boot()
 }
 ```
 
-Package views are referenced using the package::view syntax convention.
+Package views are referenced using the `package::view` syntax convention.
 
 ```php
 Route::get('admin', function () {
@@ -135,9 +142,9 @@ Route::get('admin', function () {
 
 ### Overriding Package Views
 
-* Laravel actually registers two locations for your views: the application's resources/views/vendor directory and the directory you specify.
-* Laravel will first check if a custom version of the view has been provided by the developer in resources/views/vendor/courier.
-* Then, if the view has not been customized, Laravel will search the package view directory you specified in your call to  loadViewsFrom.
+* Laravel actually registers two locations for views: the application's `resources/views/vendor` directory and the directory you specify.
+* Laravel will first check if a custom version of the view has been provided by the developer in `resources/views/vendor/courier`.
+* Then, if the view has not been customized, Laravel will search the package view directory you specified in your call to  `loadViewsFrom`.
 
 ### Publishing Views
 
@@ -169,7 +176,7 @@ public function boot()
 # Public Assets
 
 * package may have assets such as JavaScript, CSS, and images.
-* To publish these assets to the application's public directory, use the service provider's publishes method.
+* To publish these assets to the application's public directory, use the service provider's `publishes` method.
 
 ```php
 public function boot()
@@ -182,7 +189,8 @@ public function boot()
 
 # Publishing File Groups
 
-You may want to publish groups of package assets and resources separately. For instance, you might want to allow your users to publish your package's configuration files without being forced to publish your package's assets. You may do this by "tagging" them when calling the  publishes method from a package's service provider.
+* To publish groups of package assets and resources separately for instance, you might want to allow your users to publish your package's configuration files without being forced to publish your package's assets. 
+* Do this by "tagging" them when calling the  `publishes` method from a package's service provider.
 
 ```php
 public function boot()

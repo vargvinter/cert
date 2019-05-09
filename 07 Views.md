@@ -62,22 +62,13 @@ class AppServiceProvider extends ServiceProvider
     {
         View::share('key', 'value');
     }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
 }
 ```
 
 # View Composers
 
 * View composers are callbacks or class methods that are called when a view is rendered.
+* Bound data to the view each time that view is rendered.
 
 ```php
 <?php
@@ -105,16 +96,6 @@ class ComposerServiceProvider extends ServiceProvider
         View::composer('dashboard', function ($view) {
             //
         });
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }
 ```

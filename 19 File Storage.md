@@ -1,12 +1,11 @@
 # Configuration/Drivers
 
-The filesystem configuration file is located at config/filesystems.php. Within this file you may configure all of your "disks". Each disk represents a particular storage driver and storage location. 
+The filesystem configuration file is located at `config/filesystems.php`. Within this file you may configure all of your "disks". Each disk represents a particular storage driver and storage location. 
 
 ## The Public Disk
 
 * By default, the  `public` disk uses the `local` driver and stores these files in `storage/app/public`.
-* To make them accessible from the web, you create a symbolic link from `public/storage` to  `storage/app/public`.
-* `php artisan storage:link`.
+* To make them accessible from the web, create a symbolic link from `public/storage` to `storage/app/public` with `php artisan storage:link`.
 
 ## The Local Driver
 
@@ -15,6 +14,8 @@ The filesystem configuration file is located at config/filesystems.php. Within t
 
 ```php
 Storage::disk('local')->put('file.txt', 'Contents');
+
+// stored in storage/app/file.txt
 ```
 
 ## Other drivers/disks
@@ -23,11 +24,29 @@ Storage::disk('local')->put('file.txt', 'Contents');
 * FTP Driver.
 * Rackspace Driver.
 
+# Obtaining Disk Instances
+
+```php
+// put file in default disk.
+
+use Illuminate\Support\Facades\Storage;
+
+Storage::put('avatars/1', $fileContents);
+```
+
+```php
+// put file in s3 disk
+
+Storage::disk('s3')->put('avatars/1', $fileContents);
+```
+
 # Storing / Retrieving Files
 
 ## Retrieving Files
 
 ```php
+// raw data will be returned
+
 $contents = Storage::get('file.jpg');
 ```
 
@@ -37,7 +56,9 @@ $exists = Storage::disk('s3')->exists('file.jpg');
 
 ### File URLs
 
-You may use the url method to get the URL for the given file. If you are using the local driver, this will typically just prepend /storage to the given path and return a relative URL to the file. If you are using the s3 or rackspace driver, the fully qualified remote URL will be returned:
+* use the `url` method to get the URL for the given file. 
+* for `local` driver, this will typically just prepend `/storage` to the given path and return a relative URL to the file. 
+* for `s3` or `rackspace` driver, the fully qualified remote URL will be returned:
 
 ```php
 $url = Storage::url('file1.jpg');
@@ -53,6 +74,17 @@ $url = Storage::temporaryUrl(
 );
 ```
 
+### Local URL Host Customization
+
+```php
+'public' => [
+    'driver' => 'local',
+    'root' => storage_path('app/public'),
+    'url' => env('APP_URL').'/storage',
+    'visibility' => 'public',
+],
+```
+
 ### File Metadata
 
 ```php
@@ -63,8 +95,8 @@ $time = Storage::lastModified('file1.jpg');
 
 ## Storing Files
 
-* The `put` method may be used to store raw file contents on a disk.
-* You may also pass a PHP  `resource` to the `put` method, which will use Flysystem's underlying stream support.
+* Use `put` method to store raw file contents on a disk.
+* a PHP `resource` may be passed to the `put` method, which will use Flysystem's underlying stream support.
 
 ```php
 use Illuminate\Support\Facades\Storage;
@@ -76,8 +108,8 @@ Storage::put('file.jpg', $resource);
 
 ### Automatic Streaming
 
-* Use the putFile or putFileAs method.
-* This method accepts either a  `Illuminate\Http\File` or `Illuminate\Http\UploadedFile` instance and will automatically stream the file to your desired location.
+* Use the `putFile` or `putFileAs` method.
+* This method accepts either a  `Illuminate\Http\File` or `Illuminate\Http\UploadedFile` instance and will automatically stream the file to desired location.
 
 ```php
 use Illuminate\Http\File;
@@ -90,10 +122,10 @@ Storage::putFile('photos', new File('/path/to/photo'));
 Storage::putFileAs('photos', new File('/path/to/photo'), 'photo.jpg');
 ```
 
-* we only specified a directory name, not a file name.
-* By default, the putFile method will generate a unique ID to serve as the file name.
-* The path to the file will be returned by the putFile method so you can store the path, including the generated file name, in your database.
-* The putFile and putFileAs methods also accept an argument to specify the "visibility" of the stored file.
+* specify a directory name, not a file name.
+* By default, the `putFile` method will generate a unique ID to serve as the file name.
+* The path to the file will be returned by the `putFile` method so you can store the path, including the generated file name, in your database.
+* The `putFile` and `putFileAs` methods also accept an argument to specify the "visibility" of the stored file.
 * This is particularly useful if you are storing the file on a cloud disk such as S3.
 
 ```php
@@ -123,12 +155,6 @@ In web applications, one of the most common use-cases for storing files is stori
 ```php
 class UserAvatarController extends Controller
 {
-    /**
-     * Update the avatar for the user.
-     *
-     * @param  Request  $request
-     * @return Response
-     */
     public function update(Request $request)
     {
         $path = $request->file('avatar')->store('avatars');
@@ -138,7 +164,7 @@ class UserAvatarController extends Controller
 }
 ```
 
-You may also call the putFile method on the Storage facade to perform the same file manipulation as the example above:
+`putFile` method may be also called on the `Storage` facade to perform the same file manipulation as the example above:
 
 ```php
 $path = Storage::putFile('avatars', $request->file('avatar'));
@@ -164,6 +190,52 @@ $path = Storage::putFileAs(
 $path = $request->file('avatar')->store(
     'avatars/'.$request->user()->id, 's3'
 );
+```
+
+# Deleting files
+
+```php
+use Illuminate\Support\Facades\Storage;
+
+Storage::delete('file.jpg');
+
+Storage::delete(['file1.jpg', 'file2.jpg']);
+
+Storage::disk('s3')->delete('folder_path/file_name.jpg');
+```
+
+# Directories
+
+## Get All Files Within A Directory
+
+* `files` method returns an array of all of the files in a given directory
+* `allFiles` method returns an array of all of the files in a given directory and subdirectories.
+
+```php
+$files = Storage::files($directory);
+
+$files = Storage::allFiles($directory);
+```
+
+## Get All Directories Within A Directory
+
+```php
+$directories = Storage::directories($directory);
+
+// Recursive...
+$directories = Storage::allDirectories($directory);
+```
+
+## Create A Directory
+
+```php
+Storage::makeDirectory($directory);
+```
+
+## Delete A Directory
+
+```php
+Storage::deleteDirectory($directory);
 ```
 
 # Custom Filesystems

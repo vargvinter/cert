@@ -1,6 +1,7 @@
 # Configuration
 
 * Configuration file is stored at `config/session.php`.
+* Available drivers: file, cookie, database, memcached/redis, array.
 * Database driver prerequisites:
 
 ```php
@@ -22,51 +23,15 @@ php artisan migrate
 
 * Redis driver prerequisites:
 
-    * Install the `predis/predis` package (~1.0) via `Composer`.
+* Install the `predis/predis` package (~1.0) via `Composer`.
     
-# Storing Data
-
-```php
-// Via a request instance...
-$request->session()->put('key', 'value');
-
-// Via the global helper...
-session(['key' => 'value']);
-```
-
-## Pushing To Array Session Values
-
-* The `push` method is used to push a new value onto a session value that is an array.
-
-```php
-$request->session()->push('user.teams', 'developers');
-```
-
 # Retrieving Data
 
 ```php
-<?php
 
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-
-class UserController extends Controller
+public function show(Request $request, $id)
 {
-    /**
-     * Show the profile for the given user.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function show(Request $request, $id)
-    {
-        $value = $request->session()->get('key');
-
-        //
-    }
+    $value = $request->session()->get('key');
 }
 ```
 
@@ -99,8 +64,18 @@ $data = $request->session()->all();
 
 ## Determining If An Item Exists In The Session
 
+The `has` method returns `true` if the value is present and is not `null`.
+
 ```php
 if ($request->session()->has('users')) {
+    //
+}
+```
+
+To determine if a value is present in the session, even if its value is `null`, use the  `exists` method. 
+
+```php
+if ($request->session()->exists('users')) {
     //
 }
 ```
@@ -111,14 +86,22 @@ if ($request->session()->has('users')) {
 $value = $request->session()->pull('key', 'default');
 ```
 
-# Deleting Data
+# Storing Data
 
 ```php
-// Remove piece of data.
-$request->session()->forget('key');
+// Via a request instance...
+$request->session()->put('key', 'value');
 
-// Remove all session data.
-$request->session()->flush();
+// Via the global helper...
+session(['key' => 'value']);
+```
+
+## Pushing To Array Session Values
+
+* The `push` method is used to push a new value onto a session value that is an array.
+
+```php
+$request->session()->push('user.teams', 'developers');
 ```
 
 # Flash Data
@@ -142,6 +125,22 @@ $request->session()->reflash();
 ```php
 $request->session()->keep(['username', 'email']);
 ```
+
+# Deleting Data
+
+```php
+// Remove piece of data.
+$request->session()->forget('key');
+
+// Remove all session data.
+$request->session()->flush();
+```
+
+# Regenerating The Session ID
+
+* To prevent malicious users from exploiting a session fixation attack.
+
+`$request->session()->regenerate();`
 
 # Custom Drivers
 
@@ -193,16 +192,6 @@ class SessionServiceProvider extends ServiceProvider
             // Return implementation of SessionHandlerInterface...
             return new MongoSessionHandler;
         });
-    }
-
-    /**
-     * Register bindings in the container.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }
 ```

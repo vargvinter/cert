@@ -29,8 +29,8 @@ php artisan make:command SendEmails
 
 ## Command Structure
 
-After generating your command, you should fill in the `signature` and `description` properties of the class, which will be used when displaying your command on the list screen.
-The  `handle` method will be called when your command is executed. You may place your command logic in this method.
+Fill in the `signature` and `description` properties of the class, which will be used when displaying your command on the list screen.
+The  `handle` method will be called when command is executed. You may place your command logic in this method.
 
 ## Closure Commands
 
@@ -94,7 +94,7 @@ Artisan::command('build {project}', function ($project) {
     
 ## Options
 
-Options, like arguments, are another form of user input. Options are prefixed by two hyphens `(--)` when they are specified on the command line. There are two types of options: those that receive a value and those that don't. Options that don't receive a value serve as a boolean "switch".
+Two types of options: those that receive a value and those that don't. Options that don't receive a value serve as a boolean "switch".
 
 ```php
 protected $signature = 'email:send {user} {--queue}';
@@ -147,8 +147,6 @@ php artisan email:send --id=1 --id=2
 ```
 
 ## Input Descriptions
-
-You may assign descriptions to input arguments and options by separating the parameter from the description using a colon.
 
 ```php
 protected $signature = 'email:send

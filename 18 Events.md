@@ -1,6 +1,6 @@
 # Registering Events / Listeners
 
-The `EventServiceProvider` included with your Laravel application provides a convenient place to register all of your application's event listeners.
+The `EventServiceProvider` is a good place to register all of  application's event listeners.
 
 ```php
 protected $listen = [
@@ -12,13 +12,11 @@ protected $listen = [
 
 ## Generating Events & Listeners
 
-Add listeners and events to your EventServiceProvider and use the event:generate command.
+Add listeners and events to `EventServiceProvider` and use the `event:generate` command.
 
 `php artisan event:generate`
 
 ## Manually Registering Events
-
-You may also register Closure based events manually in the boot method of your `EventServiceProvider`.
 
 ```php
 public function boot()
@@ -31,9 +29,83 @@ public function boot()
 }
 ```
 
+### Wildcard Event Listeners
+
+Wildcard listeners receive the event name as their first argument, and the entire event data array as their second argument:
+
+```php
+Event::listen('event.*', function ($eventName, array $data) {
+    //
+});
+```
+
+# Defining Events
+
+```php
+<?php
+
+namespace App\Events;
+
+use App\Order;
+use Illuminate\Queue\SerializesModels;
+
+class OrderShipped
+{
+    use SerializesModels;
+
+    public $order;
+    
+    public function __construct(Order $order)
+    {
+        $this->order = $order;
+    }
+}
+```
+
+# Defining Listeners
+
+```php
+<?php
+
+namespace App\Listeners;
+
+use App\Events\OrderShipped;
+
+class SendShipmentNotification
+{
+    public function __construct()
+    {
+        //
+    }
+
+    public function handle(OrderShipped $event)
+    {
+        // Access the order using $event->order...
+    }
+}
+```
+
+## Stopping The Propagation Of An Event
+
+Return `false` from listener's `handle` method.
+
 # Queued Event Listeners
 
 To specify that a listener should be queued, add the `ShouldQueue` interface to the listener class. 
+
+```php
+<?php
+
+namespace App\Listeners;
+
+use App\Events\OrderShipped;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class SendShipmentNotification implements ShouldQueue
+{
+    //
+}
+```
 
 ## Customizing The Queue Connection & Queue Name
 
@@ -97,7 +169,7 @@ class SendShipmentNotification implements ShouldQueue
 
 ## Handling Failed Jobs
 
-If queued listener exceeds the maximum number of attempts as defined by your queue worker, the `failed` method will be called on your listener.
+If queued listener exceeds the maximum number of attempts as defined by queue worker, the `failed` method will be called on listener.
 
 ```php
 <?php
@@ -169,12 +241,12 @@ class OrderController extends Controller
 }
 ```
 
-# Subscribing to Events
+# Event Subscribers
 
 ## Writing Event Subscribers
 
-Event subscribers are classes that may subscribe to multiple events from within the class itself.
-Subscribers should define a  `subscribe` method, which will be passed an event dispatcher instance. You may call the  `listen` method on the given dispatcher to register event listeners.
+* Event subscribers are classes that may subscribe to multiple events from within the class itself.
+* Subscribers should define a `subscribe` method, which will be passed an event dispatcher instance.
 
 ```php
 <?php
@@ -216,7 +288,7 @@ class UserEventSubscriber
 
 ## Registering Event Subscribers
 
-You may register subscribers using the `$subscribe` property on the EventServiceProvider.
+Register subscribers using the `$subscribe` property on the `EventServiceProvider`.
 
 ```php
 <?php
